@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#060d18">
+<meta name="description" content="Write notes, find them fast, and keep your thoughts organized on your device.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/icon-64.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Zivo Notes — AURA ZIVO</title>
+<style>
+:root{color-scheme:dark;--bg:#060d18;--panel:#0c1929;--panel2:#102239;--line:#1d354c;--cyan:#42e8ff;--text:#eef8ff;--muted:#9cb2c7;--danger:#ff7188}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -15%,#14324b 0,transparent 55%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1100px;margin:auto;padding:24px 18px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:36px}
+.identity{display:flex;align-items:center;gap:12px}
+.mark{width:46px;height:46px;border:1px solid #2b8298;border-radius:15px;display:grid;place-items:center;color:var(--cyan);font-weight:900;font-size:21px;box-shadow:0 0 25px #42e8ff20;overflow:hidden;background:#0c1929}
+.mark img{width:100%;height:100%;object-fit:cover;display:block}
+.brand{font-size:14px;font-weight:900;letter-spacing:.14em}.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:.22em;margin-top:5px}
+.tag{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px}
+.hero{margin-bottom:26px}.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:800}
+h1{font-size:clamp(36px,6vw,58px);letter-spacing:-.05em;line-height:1.04;margin:10px 0}
+h1 span{color:var(--cyan);text-shadow:0 0 28px #42e8ff25}
+.sub{color:var(--muted);line-height:1.6;max-width:650px;margin:0}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:24px 0 18px}
+.search{flex:1;min-width:180px}
+input,textarea,select{width:100%;background:#050d17;border:1px solid #294258;border-radius:11px;padding:12px 13px;color:var(--text);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #42e8ff13}
+.btn{border:1px solid #294258;border-radius:11px;padding:11px 14px;background:#13283c;color:var(--text);font-weight:750}
+.btn:hover{border-color:#3b7c95}.primary{background:var(--cyan);color:#06111b;border-color:var(--cyan)}.danger{color:var(--danger)}
+.layout{display:grid;grid-template-columns: minmax(0,1fr) minmax(280px,1.1fr);gap:16px;align-items:start}
+.panel{background:linear-gradient(145deg,#0e1e30,#091523);border:1px solid var(--line);border-radius:20px;padding:20px;min-width:0}
+.panel h2{font-size:16px;margin:0 0 6px}.hint{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 16px}
+.field{margin-bottom:13px}.field label{display:block;font-size:12px;font-weight:750;color:#c9dbea;margin-bottom:7px}
+textarea{resize:vertical;min-height:220px;line-height:1.6}
+.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.form-actions .btn{flex:1}
+.notes-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.count{font-size:11px;color:var(--muted)}
+.notes-list{display:flex;flex-direction:column;gap:10px}
+.note-card{padding:14px;border:1px solid var(--line);border-radius:14px;background:#081321;cursor:pointer;transition:border-color .15s,transform .15s}
+.note-card:hover{border-color:#34738b;transform:translateY(-1px)}.note-card.active{border-color:var(--cyan);box-shadow:0 0 0 1px #42e8ff15}
+.note-title{font-weight:800;overflow-wrap:anywhere;margin-bottom:6px}.note-preview{font-size:12px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.note-meta{display:flex;justify-content:space-between;gap:10px;color:#7892a7;font-size:10px;margin-top:10px}
+.empty{color:#7892a7;font-size:13px;line-height:1.6;padding:20px 8px;text-align:center;border:1px dashed #294258;border-radius:13px}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin-top:12px}
+footer{text-align:center;color:#71879b;font-size:11px;line-height:1.8;margin-top:28px}
+footer a{color:var(--cyan);text-decoration:none}
+footer a:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#10283b;border:1px solid #2a647a;color:var(--text);padding:11px 16px;border-radius:12px;font-size:13px;display:none;max-width:90%;z-index:5}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.shell{padding:18px 14px 38px}header{margin-bottom:28px}.panel{padding:17px}textarea{min-height:170px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="identity"><div class="mark"><img src="icons/logo.svg" alt="AURA ZIVO Logo"></div><div class="brand">AURA ZIVO<small>TOOLS FOR EVERYDAY TECH</small></div></div>
+  <div class="tag">● Zivo Notes</div>
+</header>
+<main>
+<section class="hero"><div class="eyebrow">Your thoughts, organized</div><h1>Make space for <span>ideas.</span></h1><p class="sub">Write notes, find them fast, and keep your thoughts organized. Your notes are saved locally on this device.</p></section>
+<div class="toolbar">
+  <input class="search" id="search" type="search" placeholder="Search your notes..." aria-label="Search notes">
+  <button class="btn" id="newNote" type="button">＋ New note</button>
+  <button class="btn" id="exportNotes" type="button">Export</button>
+  <button class="btn" id="importBtn" type="button">Import</button>
+  <input id="importFile" type="file" accept="application/json,.json" hidden>
+</div>
+<div class="layout">
+<section class="panel">
+  <h2 id="editorHeading">Create a note</h2><p class="hint">Notes save on this device. Export a backup if you want to move them.</p>
+  <form id="noteForm">
+    <div class="field"><label for="title">TITLE</label><input id="title" maxlength="100" placeholder="e.g. Project ideas" required></div>
+    <div class="field"><label for="category">CATEGORY</label><select id="category"><option>Personal</option><option>School</option><option>Ideas</option><option>Work</option><option>To-do</option><option>Other</option></select></div>
+    <div class="field"><label for="body">YOUR NOTE</label><textarea id="body" maxlength="12000" placeholder="Start writing..." required></textarea></div>
+    <div class="form-actions"><button class="btn primary" type="submit" id="saveBtn">Save note</button><button class="btn" type="button" id="clearEditor">Clear editor</button></div>
+    <div class="status" id="editorStatus" aria-live="polite"></div>
+  </form>
+</section>
+<section class="panel">
+  <div class="notes-head"><div><h2>Your notes</h2><div class="count" id="noteCount">0 notes</div></div><select id="filter" aria-label="Filter notes" style="width:auto;max-width:140px"><option value="All">All categories</option><option>Personal</option><option>School</option><option>Ideas</option><option>Work</option><option>To-do</option><option>Other</option></select></div>
+  <div id="notesList" class="notes-list"></div>
+</section>
+</div>
+</main>
+<footer>AURA ZIVO · ZIVO NOTES<br>Local device storage only. Notes do not sync between devices. Avoid storing passwords or sensitive information.<br>Contact &amp; Support: <a href="mailto:rishab.devloper@gmail.com">rishab.devloper@gmail.com</a></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=id=>document.getElementById(id);
+const STORAGE_KEY='aura_zivo_notes_v1';
+let notes=[];
+let editingId=null;
+function toast(message){const box=$('toast');box.textContent=message;box.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>box.style.display='none',2400);}
+function makeId(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);}
+function loadNotes(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    const parsed=raw?JSON.parse(raw):[];
+    notes=Array.isArray(parsed)?parsed.filter(n=>n&&typeof n.id==='string'&&typeof n.title==='string'&&typeof n.body==='string'):[];
+  }catch(error){notes=[];$('editorStatus').textContent='Saved notes could not be read. You can import a backup if you have one.';}
+}
+function persistNotes(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(notes));return true;}
+  catch(error){$('editorStatus').textContent='Could not save. Device storage may be full.';return false;}
+}
+function resetEditor(){
+  editingId=null;$('noteForm').reset();$('editorHeading').textContent='Create a note';$('saveBtn').textContent='Save note';$('editorStatus').textContent='';$('notesList').querySelectorAll('.note-card').forEach(c=>c.classList.remove('active'));
+}
+function openNote(id){
+  const note=notes.find(n=>n.id===id);if(!note)return;
+  editingId=id;$('title').value=note.title;$('category').value=note.category||'Other';$('body').value=note.body;
+  $('editorHeading').textContent='Edit note';$('saveBtn').textContent='Update note';$('editorStatus').textContent='Editing selected note.';
+  renderNotes();
+  if(window.matchMedia('(max-width:760px)').matches)$('title').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function renderNotes(){
+  const list=$('notesList');list.replaceChildren();
+  const query=$('search').value.trim().toLowerCase();const category=$('filter').value;
+  const visible=notes.filter(n=>(category==='All'||(n.category||'Other')===category)&&(`${n.title} ${n.body} ${n.category||''}`).toLowerCase().includes(query)).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  $('noteCount').textContent=notes.length+' '+(notes.length===1?'note':'notes')+(visible.length!==notes.length?' · '+visible.length+' shown':'');
+  if(!visible.length){const empty=document.createElement('div');empty.className='empty';empty.textContent=notes.length?'No notes match your search or category.':'No notes yet. Create your first note on the left.';list.append(empty);return;}
+  visible.forEach(note=>{
+    const card=document.createElement('article');card.className='note-card'+(note.id===editingId?' active':'');card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','Edit note '+note.title);
+    const title=document.createElement('div');title.className='note-title';title.textContent=note.title;
+    const preview=document.createElement('div');preview.className='note-preview';preview.textContent=note.body;
+    const meta=document.createElement('div');meta.className='note-meta';
+    const cat=document.createElement('span');cat.textContent=note.category||'Other';
+    const date=document.createElement('span');date.textContent=new Date(note.updatedAt||Date.now()).toLocaleDateString();
+    meta.append(cat,date);card.append(title,preview,meta);
+    card.addEventListener('click',()=>openNote(note.id));card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openNote(note.id);}});
+    const actions=document.createElement('div');actions.style.cssText='display:flex;justify-content:flex-end;gap:8px;margin-top:10px';
+    const edit=document.createElement('button');edit.className='btn';edit.type='button';edit.textContent='Edit';edit.addEventListener('click',event=>{event.stopPropagation();openNote(note.id);});
+    const del=document.createElement('button');del.className='btn danger';del.type='button';del.textContent='Delete';del.addEventListener('click',event=>{event.stopPropagation();if(confirm('Delete this note? This cannot be undone unless you exported a backup.')){notes=notes.filter(n=>n.id!==note.id);persistNotes();if(editingId===note.id)resetEditor();renderNotes();toast('Note deleted.');}});
+    actions.append(edit,del);card.append(actions);list.append(card);
+  });
+}
+$('noteForm').addEventListener('submit',event=>{
+  event.preventDefault();const title=$('title').value.trim();const body=$('body').value.trim();
+  if(!title||!body){$('editorStatus').textContent='Add a title and some note text first.';return;}
+  const now=Date.now();
+  if(editingId){const index=notes.findIndex(n=>n.id===editingId);if(index>=0)notes[index]={...notes[index],title,body,category:$('category').value,updatedAt:now};}
+  else notes.push({id:makeId(),title,body,category:$('category').value,createdAt:now,updatedAt:now});
+  if(persistNotes()){$('editorStatus').textContent='Saved on this device.';toast(editingId?'Note updated.':'Note saved.');resetEditor();renderNotes();}
+});
+$('newNote').addEventListener('click',()=>{resetEditor();$('title').focus();});
+$('clearEditor').addEventListener('click',()=>{resetEditor();toast('Editor cleared.');});
+$('search').addEventListener('input',renderNotes);$('filter').addEventListener('change',renderNotes);
+$('exportNotes').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify({app:'Zivo Notes',version:1,exportedAt:new Date().toISOString(),notes},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='zivo-notes-backup.json';a.click();URL.revokeObjectURL(url);toast('Notes backup exported.');
+});
+$('importBtn').addEventListener('click',()=>$('importFile').click());
+$('importFile').addEventListener('change',async()=>{
+  const file=$('importFile').files[0];if(!file)return;
+  try{
+    const data=JSON.parse(await file.text());const imported=Array.isArray(data)?data:data.notes;
+    if(!Array.isArray(imported))throw new Error('Invalid format');
+    const valid=imported.filter(n=>n&&typeof n.title==='string'&&typeof n.body==='string').map(n=>({id:typeof n.id==='string'?n.id:makeId(),title:n.title.slice(0,100),body:n.body.slice(0,12000),category:['Personal','School','Ideas','Work','To-do','Other'].includes(n.category)?n.category:'Other',createdAt:Number(n.createdAt)||Date.now(),updatedAt:Number(n.updatedAt)||Date.now()}));
+    if(!confirm('Import '+valid.length+' notes? Imported notes will be added to your current notes.'))return;
+    const ids=new Set(notes.map(n=>n.id));valid.forEach(n=>{if(ids.has(n.id))n.id=makeId();notes.push(n);});persistNotes();renderNotes();toast('Notes imported.');
+  }catch(error){toast('Could not import that file. Choose a Zivo Notes JSON backup.');}
+  finally{$('importFile').value='';}
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+}
+loadNotes();renderNotes();
+</script>
+</body>
+</html>
